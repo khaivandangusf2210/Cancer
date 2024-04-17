@@ -1,0 +1,61 @@
+preprocessing:
+    sample_ratio: 1.0
+    sample_size: null
+    oversample_minority: null
+    undersample_majority: null
+    # Split by sample column to prevent data leakage due to patient-specific attributes.
+    split:
+        type: hash
+        column: sample
+        probabilities:
+        - 0.7
+        - 0.1
+        - 0.2
+        
+input_features:
+    -
+        name: image_path
+        type: image
+        encoder: stacked_cnn
+        preprocessing:
+            resize_image:
+                height: 224
+                width: 224
+            random_horizontal_flip: {}
+            random_rotation:
+                max_angle: 45
+            color_jittering:
+                brightness: 0.5
+                contrast: 0.5
+                saturation: 0.5
+                hue: 0.2
+            random_resized_crop:
+                height: 224
+                width: 224
+            normalize_image:
+                mean: [0.5, 0.5, 0.5]
+                std: [0.5, 0.5, 0.5]
+
+output_features:
+    -
+        name: label
+        type: binary
+
+training:
+    epochs: 5
+    batch_size: 32
+    learning_rate: 0.001
+    early_stop:
+        patience: 10
+        metric: loss
+    reduce_learning_rate:
+        metric: loss
+        factor: 0.5
+        patience: 5
+
+model:
+    type: resnet
+    pretrained: true
+    num_classes: 1
+
+
